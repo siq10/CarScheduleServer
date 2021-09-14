@@ -1,0 +1,98 @@
+DROP DATABASE car_schedule_test;
+CREATE DATABASE car_schedule_test;
+USE car_schedule_test;
+
+CREATE TABLE Users (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(72),
+    email VARCHAR(60) UNIQUE,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE Cars (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  brand VARCHAR(30),
+  model VARCHAR(50),
+  release_year YEAR,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE User_Cars
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL,
+  car_id INT UNSIGNED,
+  color VARCHAR(20),
+  plate VARCHAR(10) NOT NULL,
+  PRIMARY KEY(id),
+    
+  INDEX (user_id),
+  INDEX (car_id),
+   
+  FOREIGN KEY (user_id)
+    REFERENCES Users(id)
+    ON DELETE CASCADE,
+  
+  FOREIGN KEY (car_id)
+    REFERENCES Cars(id)
+    ON DELETE SET NULL
+);
+
+CREATE TABLE Procedures
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  type VARCHAR(30) NOT NULL,
+  description VARCHAR(200),
+  workload FLOAT,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE User_Procedures
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL,
+  procedure_id INT UNSIGNED,
+  user_car_id INT UNSIGNED,
+  cost FLOAT,
+  summary VARCHAR(1024),
+  start_date DATETIME NOT NULL,
+  end_date DATETIME,
+  contact_phone VARCHAR(10),
+  confirmed TINYINT DEFAULT 0,
+  finished TINYINT DEFAULT 0,
+  
+  PRIMARY KEY(id),
+    
+  INDEX (user_id),
+  INDEX (procedure_id),
+  INDEX (user_car_id),
+    
+  FOREIGN KEY (user_id)
+     REFERENCES Users(id)
+     ON DELETE CASCADE,
+  FOREIGN KEY (procedure_id)
+     REFERENCES Procedures(id)
+     ON DELETE SET NULL,
+  FOREIGN KEY (user_car_id)
+     REFERENCES User_Cars(id)
+     ON DELETE SET NULL
+);
+
+CREATE TABLE Secrets
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  secret VARCHAR(128),
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE Tutorials
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  chapter VARCHAR(50) DEFAULT "General",
+  title VARCHAR(128) NOT NULL,
+  content VARCHAR(2024),
+  url VARCHAR(128),
+  difficulty TINYINT,
+  PRIMARY KEY(id)
+);
