@@ -1,12 +1,11 @@
 const e = require('express');
 var express = require('express');
 var router = express.Router();
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('car_schedule_test', 'nwuser', 'poiasd02', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
-var User_Procedure = require('../models/User_Procedures')(sequelize, DataTypes);
+
+var User_Procedure = {}
+var User = {}
+var User_Car = {}
+var Procedure = {}
 
 var jwt = require('jsonwebtoken');
 
@@ -52,7 +51,7 @@ router.get('/:id', async function(req, res, next) {
 });
 
 router.get('/:id', async function(req, res, next) {
-    const user_procedures = await User_Procedure.findAll();
+    const user_procedures = await User_Procedure.findAll( {include: ["user", 'procedure', 'user_car']});
     console.log(user_procedures.every(up => up instanceof User_Procedure));
     res.status(200).send(JSON.stringify(user_procedures, null, 2))
 });
@@ -62,4 +61,31 @@ router.post('/', function(req,res,next)
 {
   
 })
-module.exports = router;
+
+module.exports = (procedures,user_cars,user_procedures,users) =>
+{
+    Procedure = procedures
+    User_Car = user_cars
+    User_Procedure = user_procedures
+    User = users
+    return router;
+} 
+
+// User.findAll({
+//     include: [
+//       {
+//         model: Grant,
+//         include: [User, Profile]
+//       },
+//       {
+//         model: Profile,
+//         include: {
+//           model: User,
+//           include: {
+//             model: Grant,
+//             include: [User, Profile]
+//           }
+//         }
+//       }
+//     ]
+//   });

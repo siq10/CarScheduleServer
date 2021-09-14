@@ -5,24 +5,34 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 
+// Database connection
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('car_schedule_test', 'nwuser', 'poiasd02', {
+  host: 'localhost',
+  dialect: 'mysql'
+});
+
+// Get the setup function for the models.
+var initModels = require("./models/init-models").initModels; 
+
+// Create the models and the relations between them.
+const { Cars, Procedures, Secrets, Tutorials, User_Cars, User_Procedures, Users} = initModels(sequelize);
+
+var app = express();
+
+// use it before all route definitions
+app.use(cors({origin: 'http://localhost:3000'}));
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authsRouter = require('./routes/auths');
 var tutorialsRouter = require('./routes/tutorials');
-var proceduresRouter = require('./routes/procedures');
+var proceduresRouter = require('./routes/procedures')(Procedures,User_Cars,User_Procedures,Users);
 
-var CryptoServices = require("./rsa/CryptoService")
-var CryptoService = CryptoServices.CryptoService
-var cs = new CryptoService()  
-
-var app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// use it before all route definitions
-app.use(cors({origin: 'http://localhost:3000'}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -30,6 +40,10 @@ app.use('/auths', authsRouter);
 app.use('/tutorials', tutorialsRouter);
 app.use('/procedures', proceduresRouter);
 
+
+var CryptoServices = require("./rsa/CryptoService")
+var CryptoService = CryptoServices.CryptoService
+var cs = new CryptoService()  
 
 
 const port = 3030
