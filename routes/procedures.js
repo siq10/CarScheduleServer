@@ -51,8 +51,10 @@ router.get('/:id', async function(req, res, next) {
 });
 
 router.get('/:id', async function(req, res, next) {
-    const user_procedures = await User_Procedure.findAll( {include: ["user", 'procedure', 'user_car']});
+    const user_procedures = await User_Procedure.findAll( { include: ['procedure', 'user_car']}, where:{ });
     console.log(user_procedures.every(up => up instanceof User_Procedure));
+    // const up 
+    // console.log()
     res.status(200).send(JSON.stringify(user_procedures, null, 2))
 });
 

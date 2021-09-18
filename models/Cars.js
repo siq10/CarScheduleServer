@@ -32,6 +32,8 @@ module.exports = function(sequelize, DataTypes) {
           { name: "id" },
         ]
       },
-    ]
+    ],
+    underscored: true
+
   });
 };

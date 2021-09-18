@@ -50,6 +50,7 @@ module.exports = function(sequelize, DataTypes) {
           { name: "email" },
         ]
       },
-    ]
+    ],
+    underscored: true
   });
 };

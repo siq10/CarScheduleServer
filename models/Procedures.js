@@ -30,8 +30,10 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-        ]
+        ],
       },
-    ]
+    ],
+    underscored: true
+
   });
 };

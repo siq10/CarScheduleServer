@@ -95,6 +95,7 @@ module.exports = function(sequelize, DataTypes) {
           { name: "user_car_id" },
         ]
       },
-    ]
+    ],
+    underscored: true
   });
 };

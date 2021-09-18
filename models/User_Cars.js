@@ -58,6 +58,7 @@ module.exports = function(sequelize, DataTypes) {
           { name: "car_id" },
         ]
       },
-    ]
+    ],
+    underscored: true
   });
 };

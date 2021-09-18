@@ -17,15 +17,21 @@ function initModels(sequelize) {
   var Users = _Users(sequelize, DataTypes);
 
   User_Cars.belongsTo(Cars, { as: "car", foreignKey: "car_id"});
-  Cars.hasMany(User_Cars, { as: "User_Cars", foreignKey: "car_id"});
+  // Cars.hasMany(User_Cars, { as: "User_Cars", foreignKey: "car_id"});
   User_Procedures.belongsTo(Procedures, { as: "procedure", foreignKey: "procedure_id"});
-  Procedures.hasMany(User_Procedures, { as: "User_Procedures", foreignKey: "procedure_id"});
+  // Procedures.hasMany(User_Procedures, { as: "User_Procedures", foreignKey: "procedure_id"});
   User_Procedures.belongsTo(User_Cars, { as: "user_car", foreignKey: "user_car_id"});
-  User_Cars.hasMany(User_Procedures, { as: "User_Procedures", foreignKey: "user_car_id"});
+  User_Cars.hasMany(User_Procedures, { as: "user_procedures", foreignKey: "user_car_id"});
   User_Cars.belongsTo(Users, { as: "user", foreignKey: "user_id"});
-  Users.hasMany(User_Cars, { as: "User_Cars", foreignKey: "user_id"});
+  // Users.hasMany(User_Cars, { as: "User_Cars", foreignKey: "user_id"});
   User_Procedures.belongsTo(Users, { as: "user", foreignKey: "user_id"});
-  Users.hasMany(User_Procedures, { as: "User_Procedures", foreignKey: "user_id"});
+  // Users.hasMany(User_Procedures, { as: "User_Procedures", foreignKey: "user_id"});
+
+
+  Users.belongsToMany(Procedures, {through: User_Procedures})
+  Procedures.belongsToMany(Users, {through: User_Procedures})
+  Users.belongsToMany(Cars, {through: User_Cars})
+  Cars.belongsToMany(Users, {through: User_Cars})
 
   return {
     Cars,
