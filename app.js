@@ -28,7 +28,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authsRouter = require('./routes/auths');
 var tutorialsRouter = require('./routes/tutorials');
-var proceduresRouter = require('./routes/procedures')(Procedures,User_Cars,User_Procedures,Users);
+var proceduresRouter = require('./routes/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars);
 
 
 app.use(express.urlencoded({ extended: true }));

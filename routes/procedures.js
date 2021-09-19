@@ -6,6 +6,7 @@ var User_Procedure = {}
 var User = {}
 var User_Car = {}
 var Procedure = {}
+var Car = {}
 
 var jwt = require('jsonwebtoken');
 
@@ -51,7 +52,7 @@ router.get('/:id', async function(req, res, next) {
 });
 
 router.get('/:id', async function(req, res, next) {
-    const user_procedures = await User_Procedure.findAll( { include: ['procedure', 'user_car']}, where:{ });
+    const user_procedures = await User_Procedure.findAll( { include: ['procedure', {model:User_Car,as:'user_car', include: ['car']}], where:{ user_id : req.params.id, finished : 0 }});
     console.log(user_procedures.every(up => up instanceof User_Procedure));
     // const up 
     // console.log()
@@ -64,12 +65,13 @@ router.post('/', function(req,res,next)
   
 })
 
-module.exports = (procedures,user_cars,user_procedures,users) =>
+module.exports = (procedures,user_cars,user_procedures,users,cars) =>
 {
     Procedure = procedures
     User_Car = user_cars
     User_Procedure = user_procedures
     User = users
+    Car = cars
     return router;
 } 
 
