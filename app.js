@@ -25,11 +25,16 @@ app.use(cors({origin: 'http://localhost:3000'}));
 
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/users')(Users);
 var authsRouter = require('./routes/auths');
 var tutorialsRouter = require('./routes/tutorials');
 var proceduresRouter = require('./routes/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars);
 
+// Nested routers
+var userProceduresRouter = require('./routes/users/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars);
+//
+
+usersRouter.use('/:userId/procedures', userProceduresRouter)
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
