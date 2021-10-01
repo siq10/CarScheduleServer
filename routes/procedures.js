@@ -52,7 +52,10 @@ router.get('/:id', async function(req, res, next) {
 });
 
 router.get('/:id', async function(req, res, next) {
-    const user_procedures = await User_Procedure.findAll( { include: ['procedure', {model:User_Car,as:'user_car', include: ['car']}], where:{ user_id : req.params.id, finished : 0 }});
+    const user_procedures = await User_Procedure.findAll( 
+        { attributes: ['id', 'start_date', 'confirmed'] , include: [
+            {model:Procedure, as:'procedure' , attributes: ['type']},
+            {model:User_Car,as:'user_car', attributes:['plate'], include: [{model:Car, as:'car', attributes:['brand','model','release_year']}]}], where:{ user_id : req.params.id, finished : 0 }});
     console.log(user_procedures.every(up => up instanceof User_Procedure));
     // const up 
     // console.log()
