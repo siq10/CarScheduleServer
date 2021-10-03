@@ -10,19 +10,12 @@ var Car = {}
 
 var jwt = require('jsonwebtoken');
 
-var CryptoServices = require("../../rsa/CryptoService")
+var CryptoServices = require("../../rsa/CryptoService");
+const { route } = require('../auths');
 var CryptoService = CryptoServices.CryptoService
 var cs = new CryptoService()
 
-
-router.get('/:procId', async (req, res, next) => {
-        res.status(200)
-            .send('hello procedure ' + req.params.procId + ' from user ' + req.params.userId);
-});
-
-/* GET user-procedures for user with particular id. */
-
-router.get('/', async function(req, res, next) {
+router.use((req, res, next) => {
     const token = req.get("authorization").split(" ")[1]
     if(token == null )
     {
@@ -33,14 +26,30 @@ router.get('/', async function(req, res, next) {
         req.token = token
         next()
     }
-});
+})
 
-router.get('/', async function(req, res, next) {
+/* GET user-procedures for user with particular id. */
+
+// router.get('/', async function(req, res, next) {
+//     const token = req.get("authorization").split(" ")[1]
+//     if(token == null )
+//     {
+//         return res.status(403).json({ error: 'No credentials sent!' });
+//     }
+//     else
+//     {
+//         req.token = token
+//         next()
+//     }
+// });
+
+router.use(async function(req, res, next) {
     if(req.token)
     {
         jwt.verify(req.token, CryptoService.publicKey, (err, decoded) =>  {
             if(!err)
             {
+                req.tokenId = decoded.id
                 console.log(decoded)
                 next()
             }
@@ -57,7 +66,48 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-router.get('/', async function(req, res, next) {
+router.use(async function(req, res, next) {
+    if(req.tokenId == req.params.userId)
+    {
+        next()
+    }
+    else
+    {
+        return res.status(401).json({ error: "You don't have access to this user's data"});
+    }
+});
+
+router.get('/:procId', async (req, res) => {
+    const user_procedure = await User_Procedure.findOne(
+        {
+            attributes: ['cost', 'summary', 'start_date', 'end_date', 'contact_phone', 'confirmed','finished'],
+            include: [
+                {
+                    model:User_Car,as:'user_car', 
+                    attributes:['color','plate'], 
+                    include:[
+                        {
+                            model:Car, as:'car', 
+                            attributes:['brand','model','release_year']
+                        }
+                    ]
+                }
+            ],
+            where: {id:req.params.procId}
+        })
+    if(user_procedure === null)
+    {
+        return res.status(404).json({ error: "Element not found!"});
+    }
+    else
+    {
+        console.log(user_procedure);
+        res.status(200).send(JSON.stringify(user_procedure, null, 2))
+    }
+    
+});
+
+router.get('/', async function(req, res) {
     const user_procedures = await User_Procedure.findAll( 
         { attributes: ['id', 'start_date', 'confirmed'] , include: [
             {model:Procedure, as:'procedure' , attributes: ['type']},

@@ -32,7 +32,7 @@ router.post('/', function(req, res, next) {
         console.log(authenticated)
         if(authenticated)
         {
-          jwt.sign({id:user.id,username:user.username,email:user.email}, CryptoService.privateKey, {
+          jwt.sign({id:user.id,username:user.username}, CryptoService.privateKey, {
             algorithm: "RS512"
           }, (err, token) => {
             if(err !== null)
