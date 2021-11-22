@@ -6,12 +6,16 @@ var User = {}
 var User_Car = {}
 var Procedure = {}
 var Car = {}
+var User_Procedure_Notification = {}
+var Notification = {}
 
+const { Sequelize } = require('sequelize');
 
 var jwt = require('jsonwebtoken');
 
 var CryptoServices = require("../../rsa/CryptoService");
 const { route } = require('../auths');
+const e = require('express');
 var CryptoService = CryptoServices.CryptoService
 var cs = new CryptoService()
 
@@ -83,6 +87,10 @@ router.get('/:procId', async (req, res) => {
             attributes: ['cost', 'summary', 'start_date', 'end_date', 'contact_phone', 'confirmed','finished'],
             include: [
                 {
+                    model:Procedure, as: "procedure",
+                    attributes:['type','description', 'workload']
+                },
+                {
                     model:User_Car,as:'user_car', 
                     attributes:['color','plate'], 
                     include:[
@@ -91,9 +99,15 @@ router.get('/:procId', async (req, res) => {
                             attributes:['brand','model','release_year']
                         }
                     ]
+                },
+                {
+                    model:Notification, 
+                    attributes:{exclude:['id']}, 
+                    through:{attributes:['id', 'additional_info', 'updatedAt']}, // pivot table attributes.
                 }
             ],
-            where: {id:req.params.procId}
+            where: {id:req.params.procId},
+            order: [[Sequelize.literal('`Notifications->User_Procedure_Notifications`.'), 'updatedAt', 'DESC']]
         })
     if(user_procedure === null)
     {
@@ -101,29 +115,111 @@ router.get('/:procId', async (req, res) => {
     }
     else
     {
-        console.log(user_procedure);
-        res.status(200).send(JSON.stringify(user_procedure, null, 2))
+        let jsonresult = user_procedure.toJSON()
+        jsonresult.Notifications.forEach((element,index,arr) => {
+            arr[index] = {...arr[index], ...arr[index].User_Procedure_Notifications}
+            delete arr[index].User_Procedure_Notifications
+        });
+        // console.log(jsonresult);
+        res.status(200).send(JSON.stringify(jsonresult, null, 2))
     }
     
 });
 
 router.get('/', async function(req, res) {
-    const user_procedures = await User_Procedure.findAll( 
+    const user_procedures = await User_Procedure.findAll(
         { attributes: ['id', 'start_date', 'confirmed'] , include: [
             {model:Procedure, as:'procedure' , attributes: ['type']},
-            {model:User_Car,as:'user_car', attributes:['plate'], include: [{model:Car, as:'car', attributes:['brand','model','release_year']}]}], where:{ user_id : req.params.userId, finished : 0 }});
+            {model:User_Car,as:'user_car', attributes:['plate'], include: [{model:Car, as:'car', attributes:['brand','model','release_year']}]}
+        ], where:{ userId : req.params.userId, finished : 0 }});
     console.log(user_procedures.every(up => up instanceof User_Procedure));
     // const up 
     // console.log()
     res.status(200).send(JSON.stringify(user_procedures, null, 2))
 });
 
-module.exports = (procedures,user_cars,user_procedures,users,cars) =>
+/**
+ * Updates procedure belonging to a user with fields from request
+ * @param
+ * procId  id of the operation that would be updated.
+ */
+router.put('/:procId', async (req, res) => {
+    const user_procedure_tobeupdated = await User_Procedure.findByPk(req.params.procId)
+
+    if(user_procedure_tobeupdated !== null && user_procedure_tobeupdated.userId === parseInt(req.params.userId,10))
+    {
+        let data = {}
+        if(req.body.phone)
+        {
+            data.contact_phone = req.body.phone
+        }
+        if(req.body.start_date)
+        {
+            data.start_date = req.body.start_date
+        }
+        user_procedure_tobeupdated.update(data)
+        res.sendStatus(204)
+    }
+    else
+    {
+        res.sendStatus(404)
+    }
+})
+
+/**
+ * Updates procedure belonging to a user with fields from request
+ * @param
+ * procId  id of the operation that would be updated.
+ */
+ router.put('/:procId', async (req, res) => {
+    const user_procedure_tobeupdated = await User_Procedure.findByPk(req.params.procId)
+
+    if(user_procedure_tobeupdated !== null && user_procedure_tobeupdated.userId === parseInt(req.params.userId,10))
+    {
+        let data = {}
+        if(req.body.phone)
+        {
+            data.contact_phone = req.body.phone
+        }
+        if(req.body.start_date)
+        {
+            data.start_date = req.body.start_date
+        }
+        user_procedure_tobeupdated.update(data)
+        res.sendStatus(204)
+    }
+    else
+    {
+        res.sendStatus(404)
+    }
+})
+
+/**
+ * Deletes procedure belonging to a user
+ * @param
+ * procId  id of the operation that would be updated.
+ */
+ router.delete('/:procId', async (req, res) => {
+    const user_procedure_tobeupdated = await User_Procedure.findByPk(req.params.procId)
+
+    if(user_procedure_tobeupdated !== null && user_procedure_tobeupdated.userId === parseInt(req.params.userId,10))
+    {
+        await user_procedure_tobeupdated.destroy()
+        res.sendStatus(200)
+    }
+    else
+    {
+        res.sendStatus(404)
+    }
+})
+module.exports = (procedures,user_cars,user_procedures,users,cars, notifications, user_procedure_notifications) =>
 {
     Procedure = procedures
     User_Car = user_cars
     User_Procedure = user_procedures
     User = users
     Car = cars
+    User_Procedure_Notification = user_procedure_notifications
+    Notification = notifications
     return router;
 } 

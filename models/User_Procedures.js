@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    procedure_id: {
+    procedureId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
@@ -23,7 +23,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    user_car_id: {
+    user_carId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
@@ -75,27 +75,26 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "user_id",
+        name: "userId",
         using: "BTREE",
         fields: [
-          { name: "user_id" },
+          { name: "userId" },
         ]
       },
       {
-        name: "procedure_id",
+        name: "procedureId",
         using: "BTREE",
         fields: [
-          { name: "procedure_id" },
+          { name: "procedureId" },
         ]
       },
       {
-        name: "user_car_id",
+        name: "user_carId",
         using: "BTREE",
         fields: [
-          { name: "user_car_id" },
+          { name: "user_carId" },
         ]
       },
     ],
-    underscored: true
   });
 };

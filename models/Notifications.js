@@ -1,36 +1,23 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('Tutorials', {
+  return sequelize.define('Notifications', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true
     },
-    chapter: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: "General"
-    },
-    title: {
-      type: DataTypes.STRING(128),
-      allowNull: false
-    },
-    content: {
-      type: DataTypes.STRING(2024),
+    type: {
+      type: DataTypes.ENUM('error','warning','info','success'),
       allowNull: true
     },
-    url: {
-      type: DataTypes.STRING(128),
-      allowNull: true
-    },
-    difficulty: {
-      type: DataTypes.TINYINT,
-      allowNull: true
+    message: {
+        type: DataTypes.STRING(100),
+        allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'Tutorials',
+    tableName: 'Notifications',
     timestamps: false,
     indexes: [
       {

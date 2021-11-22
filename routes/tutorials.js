@@ -1,11 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('car_schedule_test', 'nwuser', 'poiasd02', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
-var Tutorial = require('../models/Tutorials')(sequelize, DataTypes);
+
+var Tutorial = {}
 
 /* GET tutorials. */
 router.get('/', async function(req, res, next) {
@@ -40,4 +36,8 @@ router.post('/', function(req,res,next)
   });
   
 })
-module.exports = router;
+
+module.exports = (tutorials) => {
+  Tutorial = tutorials
+  return router;
+}

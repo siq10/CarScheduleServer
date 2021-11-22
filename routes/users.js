@@ -36,6 +36,6 @@ router.post('/', function(req,res,next)
   
 })
 module.exports = (users) => {
-
+  User = users
   return router;
 }

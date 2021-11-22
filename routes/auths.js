@@ -1,11 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('car_schedule_test', 'nwuser', 'poiasd02', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
-var User = require('../models/Users')(sequelize, DataTypes);
+var User = {}
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
@@ -58,4 +54,7 @@ router.post('/', function(req, res, next) {
  
 });
 
-module.exports = router;
+module.exports = (users) => {
+  User = users
+  return router;
+}

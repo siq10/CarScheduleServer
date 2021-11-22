@@ -1,40 +1,38 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('User_Cars', {
+  return sequelize.define('User_Procedure_Notifications', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true
     },
-    userId: {
+    user_procedureId : {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: 'Users',
+        model: 'User_Procedures',
         key: 'id'
       }
     },
-    carId: {
+    notificationId: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       references: {
-        model: 'Cars',
+        model: 'Notifications',
         key: 'id'
       }
     },
-    color: {
-      type: DataTypes.STRING(20),
+    additional_info: {
+      type: DataTypes.STRING(200),
       allowNull: true
     },
-    plate: {
-      type: DataTypes.STRING(10),
-      allowNull: false
-    }
   }, {
     sequelize,
-    tableName: 'User_Cars',
-    timestamps: false,
+    tableName: 'User_Procedure_Notifications',
+    defaultScope: {
+      attributes: { exclude: ['user_procedureId', 'notificationId'] }},
+    timestamps: true,
     indexes: [
       {
         name: "PRIMARY",
@@ -45,17 +43,17 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "userId",
+        name: "user_procedureId",
         using: "BTREE",
         fields: [
-          { name: "userId" },
+          { name: "user_procedureId" },
         ]
       },
       {
-        name: "carId",
+        name: "notificationId",
         using: "BTREE",
         fields: [
-          { name: "carId" },
+          { name: "notificationId" },
         ]
       },
     ],

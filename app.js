@@ -7,7 +7,7 @@ var cors = require('cors');
 
 // Database connection
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('car_schedule_test', 'nwuser', 'poiasd02', {
+const sequelize = new Sequelize('car_schedule_test2', 'nwuser', 'poiasd02', {
   host: 'localhost',
   dialect: 'mysql'
 });
@@ -16,7 +16,7 @@ const sequelize = new Sequelize('car_schedule_test', 'nwuser', 'poiasd02', {
 var initModels = require("./models/init-models").initModels; 
 
 // Create the models and the relations between them.
-const { Cars, Procedures, Secrets, Tutorials, User_Cars, User_Procedures, Users} = initModels(sequelize);
+const { Cars, Procedures, Secrets, Tutorials, User_Cars, User_Procedures, Users, Notifications, User_Procedure_Notifications} = initModels(sequelize);
 
 var app = express();
 
@@ -26,12 +26,12 @@ app.use(cors({origin: 'http://localhost:3000'}));
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users')(Users);
-var authsRouter = require('./routes/auths');
-var tutorialsRouter = require('./routes/tutorials');
-var proceduresRouter = require('./routes/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars);
+var authsRouter = require('./routes/auths')(Users);
+var tutorialsRouter = require('./routes/tutorials')(Tutorials);
+var proceduresRouter = require('./routes/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars, sequelize);
 
 // Nested routers
-var userProceduresRouter = require('./routes/users/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars);
+var userProceduresRouter = require('./routes/users/procedures')(Procedures,User_Cars,User_Procedures,Users, Cars, Notifications, User_Procedure_Notifications);
 //
 
 usersRouter.use('/:userId/procedures', userProceduresRouter)
@@ -46,7 +46,7 @@ app.use('/tutorials', tutorialsRouter);
 app.use('/procedures', proceduresRouter);
 
 
-var CryptoServices = require("./rsa/CryptoService")
+var CryptoServices = require("./rsa/CryptoService");
 var CryptoService = CryptoServices.CryptoService
 var cs = new CryptoService()  
 

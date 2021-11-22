@@ -51,6 +51,5 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
     ],
-    underscored: true
   });
 };

@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "nwuser",
+    "password": "poiasd02",
+    "database": "car_schedule_test2",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "nwuser",
+    "password": "poiasd02",
+    "database": "car_schedule_test2",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "nwuser",
+    "password": "poiasd02",
+    "database": "car_schedule_test2",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
